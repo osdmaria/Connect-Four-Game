@@ -9,22 +9,17 @@ import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass';
+import { MMDPhysics } from 'three/addons/animation/MMDPhysics.js';
+import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 
 
-let change = false;
 
 const inGameScene = new THREE.Scene();
-inGameScene.background = new THREE.Color(0xffffff)
+inGameScene.background = new THREE.Color(0xF2E8C9)
 
-const cubeGeometry = new THREE.BoxGeometry(100, 100, 100);
-const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-// Add the cube to the scene
-inGameScene.add(cube);
 
 let scene = new THREE.Scene();
-scene.background = new THREE.Color(0x393633)
+scene.background = new THREE.Color(0xF2E8C9)
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 scene.add(new THREE.AxesHelper(5))
 
@@ -32,77 +27,83 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 
+
+let board;
+
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.shadowMap.enabled = true;
 document.body.appendChild( renderer.domElement );
 
-camera.position.z = 40;
-camera.position.y = 80;
-camera.position.x = 40;
+camera.position.z = 20;
+camera.position.y = 10;
+camera.position.x = 15;
 
 //Lights ///////////////////////////////////////
 
 const light = new THREE.PointLight(0xffffff, 200)
-light.position.set(0, 110, -30)
+light.position.set(0, 40, -30)
 scene.add(light)
 
 const light1 = new THREE.PointLight(0xffffff, 200)
-light1.position.set(30, 110, -30)
+light1.position.set(30, 40, -30)
 scene.add(light1)
 
 const light2 = new THREE.PointLight(0xffffff, 200)
-light2.position.set(-30, 110, -30)
+light2.position.set(-30, 40, -30)
 scene.add(light2)
 
 const light3 = new THREE.PointLight(0xffffff, 200)
-light3.position.set(-30, 110, -30)
+light3.position.set(-30, 40, -30)
 scene.add(light3)
 
 const light5 = new THREE.PointLight(0xffffff, 200)
-light5.position.set(-30, 110, 0)
+light5.position.set(-30, 40, 0)
 scene.add(light5)
 
 const light6 = new THREE.PointLight(0xffffff, 200)
-light6.position.set(-30, 110, 20)
+light6.position.set(-30, 40, 20)
 scene.add(light6)
 
 const light7 = new THREE.PointLight(0xffffff, 200)
-light7.position.set(0, 110, 0)
+light7.position.set(35, 10, 30)
 scene.add(light7)
+inGameScene.add(light7.clone())
 
 
-const lightOnGame = new THREE.DirectionalLight(0xFCF3DA, 0.8)
+const lightOnGame = new THREE.DirectionalLight(0xFCF3DA, 2)
 lightOnGame.position.set(38, 30, 10)
 scene.add(lightOnGame)
+inGameScene.add(lightOnGame.clone())
+
+
 
 // /////////////////////////////////////////
 
 const fbxLoader = new FBXLoader()
 const objloader = new OBJLoader()
-const textureLoader = new THREE.TextureLoader();
-const texture1 = textureLoader.load('models/office/texture/texture.png')
+// const materialLoader = new MTLLoader();
+// const material = materialLoader.load('models/house/materials.mtl')
 
 
-const material =
-  new THREE.MeshPhongMaterial({map: texture1 });
 
-console.log(material)
 
-objloader.load(
-  'models/office/newoffice.obj',
+fbxLoader.load(
+  'models/house/AA.fbx',
   (object) => {
     console.log(object)
-    object.scale.multiplyScalar(0.25); 
+    object.scale.multiplyScalar(0.12); 
     object.traverse( function ( child ) {
       if ( child.isMesh ) {
           child.castShadow = true;
           child.receiveShadow = true;
-          child.material = material
+          // child.material = material
       }
     } )
 
       scene.add(object)
+      inGameScene.add(object.clone())
   },
   (xhr) => {
       console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
@@ -113,12 +114,11 @@ objloader.load(
 )
 
 
-let board;
 fbxLoader.load(
   'models/connectFour/board.fbx',
   (object) => {
     console.log(object)
-    object.scale.multiplyScalar(0.001); 
+    object.scale.multiplyScalar(0.0007); 
     object.traverse( function ( child ) {
       if ( child.isMesh ) {
           child.castShadow = true;
@@ -127,10 +127,11 @@ fbxLoader.load(
   
     } )
       scene.add(object)
-      object.position.y = 38
-      object.position.x = 38
-      object.position.z = 10
+      object.position.y = -4
+      object.position.x = 21
+      object.position.z = 43
       board = object
+      inGameScene.add(object.clone())
   },
   (xhr) => {
       console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
@@ -153,9 +154,9 @@ fbxLoader.load(
       }
     } )
       scene.add(object)
-      object.position.y = 55
-      object.position.x = 38
-      object.position.z = 6
+      object.position.y = 2
+      object.position.x = 21
+      object.position.z = 42
       arrow = object;
       animate();
   },
@@ -168,7 +169,7 @@ fbxLoader.load(
 )
 
 const orbitControls = new OrbitControls(camera, renderer.domElement);
-orbitControls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+orbitControls.enableDamping = false; // an animation loop is required when either damping or auto-rotation are enabled
 orbitControls.dampingFactor = 0.25;
 orbitControls.screenSpacePanning = false;
 orbitControls.maxPolarAngle = Math.PI / 2;
@@ -200,6 +201,7 @@ renderer.domElement.addEventListener( 'click', onClick );
 
 let selectedObjects = [];
 
+let change = false;
 function onClick(event){
   raycaster.setFromCamera( mouse, camera );
 
@@ -263,21 +265,90 @@ function onWindowResize() {
 
 
 
+// IN GAME
+let objects = []
+
+fbxLoader.load(
+  'models/connectFour/red_coin.fbx',
+  (object) => {
+    console.log(object)
+    object.scale.multiplyScalar(0.0007); 
+    object.traverse( function ( child ) {
+      if ( child.isMesh ) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+      }
+    } )
+      inGameScene.add(object)
+      objects.push(object)
+      object.position.y = -4
+      object.position.x = 17
+      object.position.z = 40
+  },
+  (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+  },
+  (error) => {
+      console.log(error)
+  }
+)
+
+
+fbxLoader.load(
+  'models/connectFour/yellow_coin.fbx',
+  (object) => {
+    console.log(object)
+    object.scale.multiplyScalar(0.0007); 
+    object.traverse( function ( child ) {
+      if ( child.isMesh ) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+      }
+    } )
+      inGameScene.add(object)
+      objects.push(object)
+      object.position.y = -4
+      object.position.x = 27
+      object.position.z = 40
+  },
+  (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+  },
+  (error) => {
+      console.log(error)
+  }
+)
+
+const controls = new DragControls( objects, camera, renderer.domElement );
+
+
+
+
 /////////////////
 // Render loop
 function animate() {
-  // if (change == true){
-  //   scene = inGameScene
-  //   console.log(scene)
-  // }
+  if (change == true){
+    scene = inGameScene
+    if (scene == inGameScene){
+      camera.position.z = 51;
+      camera.position.y = -4;
+      camera.position.x = 21;
+    }
+    requestAnimationFrame(animate);
+    orbitControls.update()
+    renderer.render(scene, camera);
+  }  
+  else{
   requestAnimationFrame(animate);
-  orbitControls.update()
+  orbitControls.update();
   if (arrow) {
     // Update arrow position based on sine function
-    arrow.position.y = 55 + amplitude * Math.sin(frequency * performance.now() * 0.003);
+    arrow.position.y = 10 + amplitude * Math.sin(frequency * performance.now() * 0.003);
   }
   renderer.render(scene, camera);
   composer.render();
+  }
+  
 }
 
 animate();
