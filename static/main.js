@@ -39,10 +39,6 @@ renderer.shadowMap.enabled = true;
 renderer.domElement.id = "myCanvas";
 document.body.appendChild(renderer.domElement);
 
-camera.position.z = 13;
-camera.position.y = 10;
-camera.position.x = 28;
-camera.rotation.set(1, 5, 10);
 //Lights ///////////////////////////////////////
 
 const light = new THREE.PointLight(0xffffff, 200);
@@ -83,6 +79,11 @@ const LightTheRoom = new THREE.DirectionalLight(0xfcf3da, 0.8);
 LightTheRoom.position.set(30, 25, 37);
 inGameScene1NPC.add(LightTheRoom);
 
+camera.position.z = 56;
+camera.position.y = -4;
+camera.position.x = 29;
+camera.rotation.y = Math.PI * 0.5;
+
 // /////////////////////////////////////////
 
 const fbxLoader = new FBXLoader();
@@ -103,6 +104,7 @@ fbxLoader.load(
 
     scene.add(object);
     inGameScene1NPC.add(object.clone());
+    helper.style.display = "block";
   },
   (xhr) => {
     console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
@@ -214,12 +216,10 @@ function onClick(event) {
   if (
     intersects.length > 0 &&
     intersects[0].object.name == "4gewinnt" &&
-    scene != inGameScene1NPC &&
-    scene != inGameScene2NPC
+    change1NPC == false &&
+    change2NPC == false
   ) {
-    let btn1 = document.getElementById("computerVSHumanButton");
-    let btn2 = document.getElementById("computerVSComputerButton");
-    let div = document.getElementById("gameMode");
+    helper.style.display = "none";
     btn1.style.display = "block";
     btn2.style.display = "block";
     div.style.display = "block";
@@ -636,6 +636,12 @@ function getColumn() {
   });
 }
 
+let helper = document.getElementById("turn_box");
+let helper_text = document.getElementById("turn");
+helper_text.innerText = "Click on the board !";
+
+
+
 //We fetch the state of the board each time and add the coins using the addCoin function depending on who's the player who played where..etc
 
 /////////////////
@@ -665,7 +671,7 @@ function animate() {
     if (arrow) {
       // Update arrow position based on sine function
       arrow.position.y =
-        10 + amplitude * Math.sin(frequency * performance.now() * 0.003);
+        14 + amplitude * Math.sin(frequency * performance.now() * 0.003);
     }
     Global_mixer.update(0.01);
     Global_mixer1.update(0.01);
