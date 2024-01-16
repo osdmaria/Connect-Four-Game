@@ -12,7 +12,6 @@ import { TextGeometry } from "https://threejs.org/examples/jsm/geometries/TextGe
 import { MeshBasicMaterial } from "three";
 import { FirstPersonControls } from "https://threejs.org/examples/jsm/controls/FirstPersonControls.js";
 
-
 import { createBoard, addCoin } from "./board.js";
 
 const inGameScene1NPC = new THREE.Scene();
@@ -28,7 +27,6 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-scene.add(new THREE.AxesHelper(5));
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -41,10 +39,10 @@ renderer.shadowMap.enabled = true;
 renderer.domElement.id = "myCanvas";
 document.body.appendChild(renderer.domElement);
 
-camera.position.z = 20;
+camera.position.z = 13;
 camera.position.y = 10;
-camera.position.x = 15;
-
+camera.position.x = 28;
+camera.rotation.set(1, 5, 10);
 //Lights ///////////////////////////////////////
 
 const light = new THREE.PointLight(0xffffff, 200);
@@ -82,9 +80,8 @@ scene.add(lightOnGame);
 inGameScene1NPC.add(lightOnGame.clone());
 
 const LightTheRoom = new THREE.DirectionalLight(0xfcf3da, 0.8);
-LightTheRoom.position.set(30,25,37)
-inGameScene1NPC.add(LightTheRoom)
-
+LightTheRoom.position.set(30, 25, 37);
+inGameScene1NPC.add(LightTheRoom);
 
 // /////////////////////////////////////////
 
@@ -172,8 +169,6 @@ orbitControls.dampingFactor = 0.25;
 orbitControls.screenSpacePanning = false;
 orbitControls.maxPolarAngle = Math.PI / 2;
 
-
-
 const amplitude = 5; // Adjust the amplitude based on the desired height of oscillation
 const frequency = 1; // Adjust the frequency based on how quickly you want it to move
 
@@ -231,7 +226,6 @@ function onClick(event) {
   }
 }
 
-
 let btn1 = document.getElementById("computerVSHumanButton");
 let btn2 = document.getElementById("computerVSComputerButton");
 let btn3 = document.getElementById("start");
@@ -241,7 +235,7 @@ btn1.addEventListener("click", () => {
   reset_board();
   change1NPC = true;
   change2NPC = false;
-  socket.removeAllListeners()
+  socket.removeAllListeners();
   btn1.style.display = "none";
   btn2.style.display = "none";
   div.style.display = "none";
@@ -254,18 +248,18 @@ btn3.addEventListener("click", (event) => {
     StartGame();
   }
   btn3.style.display = "none";
-  btn4.style.display = 'block';
-  console.log("KDSSDKFLSKDLF")
+  btn4.style.display = "block";
+  console.log("KDSSDKFLSKDLF");
 });
 
 btn4.addEventListener("click", () => {
-  btn4.style.display = "none"
+  btn4.style.display = "none";
   btn3.style.display = "none";
   change1NPC = false;
   change2NPC = false;
-  socket.emit("please_disconnect")
+  socket.emit("please_disconnect");
   socket.close();
-  console.log("clicked on back")
+  console.log("clicked on back");
   let div = document.getElementById("turn_box");
   div.style.display = "none";
 });
@@ -274,14 +268,12 @@ btn2.addEventListener("click", () => {
   reset_board();
   change2NPC = true;
   change1NPC = false;
-  socket.removeAllListeners()
+  socket.removeAllListeners();
   btn2.style.display = "none";
   btn1.style.display = "none";
   div.style.display = "none";
   btn3.style.display = "block";
-
 });
-
 
 function onPointerMove(event) {
   if (event.isPrimary === false) return;
@@ -302,7 +294,12 @@ function checkIntersection() {
 
   const intersects = raycaster.intersectObject(scene, true);
 
-  if (intersects.length > 0 && intersects[0].object.name == "4gewinnt") {
+  if (
+    intersects.length > 0 &&
+    intersects[0].object.name == "4gewinnt" &&
+    change1NPC == false &&
+    change2NPC == false
+  ) {
     const selectedObject = intersects[0].object;
     addSelectedObject(selectedObject);
     outlinePass.selectedObjects = selectedObjects;
@@ -345,15 +342,15 @@ fbxLoader.load(
     object.position.y = -10;
     object.position.x = 38;
     object.position.z = 40;
-    object.rotation.y = THREE.MathUtils.degToRad(-90)
+    object.rotation.y = -1.57;
 
     // Try to access the animations directly from the object
-    const mixer = new THREE.AnimationMixer( object );
+    const mixer = new THREE.AnimationMixer(object);
     Global_mixer = mixer;
-    console.log("mixer",mixer)
+    console.log("mixer", mixer);
     const clips = object.animations;
-    console.log("clips",clips)
-    const clip = THREE.AnimationClip.findByName( clips, 'mixamo.com' );
+    console.log("clips", clips);
+    const clip = THREE.AnimationClip.findByName(clips, "mixamo.com");
     if (clip) {
       const action = mixer.clipAction(clip);
       action.play();
@@ -368,9 +365,6 @@ fbxLoader.load(
     console.log(error);
   }
 );
-
-
-
 
 fbxLoader.load(
   "static/models/animations/MaleSittingPose.fbx",
@@ -387,15 +381,15 @@ fbxLoader.load(
     object.position.y = -10;
     object.position.x = 2;
     object.position.z = 40;
-    object.rotation.y = THREE.MathUtils.degToRad(90)
+    object.rotation.y = 1.57;
 
     // Try to access the animations directly from the object
-    const mixer = new THREE.AnimationMixer( object );
+    const mixer = new THREE.AnimationMixer(object);
     Global_mixer1 = mixer;
-    console.log("mixer",mixer)
+    console.log("mixer", mixer);
     const clips = object.animations;
-    console.log("clips",clips)
-    const clip = THREE.AnimationClip.findByName( clips, 'mixamo.com' );
+    console.log("clips", clips);
+    const clip = THREE.AnimationClip.findByName(clips, "mixamo.com");
     if (clip) {
       const action = mixer.clipAction(clip);
       action.play();
@@ -411,29 +405,25 @@ fbxLoader.load(
   }
 );
 
-
-
 const url = "http://127.0.0.1:5000";
 const socket = io(url, {
   autoConnect: false,
-  reconnection: false
+  reconnection: false,
 });
 
-
-
 function StartGame() {
-  console.log("adaadwdaddada")
+  console.log("adaadwdaddada");
   const grid1 = createBoard();
   const grid2 = createBoard();
   inGameScene1NPC.add(grid1);
   inGameScene2NPC.add(grid2);
 
-  reset_board()
-  reset_board()
-  reset_board()
-  reset_board()
-  socket.connect()
-  
+  reset_board();
+  reset_board();
+  reset_board();
+  reset_board();
+  socket.connect();
+
   socket.emit("computer_turn");
   let div = document.getElementById("turn_box");
   let text = document.getElementById("turn");
@@ -451,14 +441,14 @@ function StartGame() {
   socket.on("update_board_HvsC", (row, col) => {
     console.log("updated", row, col); // "got it"
 
-    if (change1NPC == true && change2NPC == false){
+    if (change1NPC == true && change2NPC == false) {
       addCoin(inGameScene1NPC, grid1, row + 1, col + 1, 1);
-      socket.emit("human_request")
+      socket.emit("human_request");
     }
 
-    if (change1NPC == false && change2NPC == true){
+    if (change1NPC == false && change2NPC == true) {
       addCoin(inGameScene2NPC, grid2, row + 1, col + 1, 1);
-      socket.emit('monte_carlo')
+      socket.emit("monte_carlo");
       let div = document.getElementById("turn_box");
       let text = document.getElementById("turn");
       text.innerText = "Yellow's Turn ";
@@ -475,8 +465,7 @@ function StartGame() {
     div.style.display = "block";
   });
 
-
-  socket.on("human_input_request", ()=>{
+  socket.on("human_input_request", () => {
     console.log("requesting human input");
     let div = document.getElementById("turn_box");
     let text = document.getElementById("turn");
@@ -490,8 +479,7 @@ function StartGame() {
       .catch((error) => {
         console.error("Error", error);
       });
-
-  })
+  });
   socket.on("row", (row, col) => {
     console.log("hi", row, col);
     addCoin(inGameScene1NPC, grid1, row + 1, col + 1, 2);
@@ -499,10 +487,7 @@ function StartGame() {
     let text = document.getElementById("turn");
     text.innerText = "Red's Turn ";
     div.style.display = "block";
-    
   });
-
-
 
   socket.on("game_over", (data) => {
     console.log("Game over. Winner:", data.winner);
@@ -533,8 +518,6 @@ function reset_board() {
     }
   }
 }
-
-
 
 function generate_indexes() {
   let len = 7;
@@ -655,26 +638,23 @@ function getColumn() {
 
 //We fetch the state of the board each time and add the coins using the addCoin function depending on who's the player who played where..etc
 
-
-
 /////////////////
 // Render loop
 var clock = new THREE.Clock();
 function animate() {
   if (change1NPC == true && change2NPC == false) {
-      camera.position.z = 51;
-      camera.position.y = -4;
-      camera.position.x = 21;
+    camera.position.z = 51;
+    camera.position.y = -4;
+    camera.position.x = 21;
     requestAnimationFrame(animate);
     orbitControls.update();
     Global_mixer.update(0.01);
     Global_mixer1.update(0.01);
     renderer.render(inGameScene1NPC, camera);
-
   } else if (change2NPC == true && change1NPC == false) {
-      camera.position.z = 51;
-      camera.position.y = -4;
-      camera.position.x = 21;
+    camera.position.z = 51;
+    camera.position.y = -4;
+    camera.position.x = 21;
     requestAnimationFrame(animate);
     orbitControls.update();
     Global_mixer.update(0.01);
@@ -686,7 +666,7 @@ function animate() {
       // Update arrow position based on sine function
       arrow.position.y =
         10 + amplitude * Math.sin(frequency * performance.now() * 0.003);
-      }
+    }
     Global_mixer.update(0.01);
     Global_mixer1.update(0.01);
     orbitControls.update();
