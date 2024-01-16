@@ -1,20 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Connect Four</title>
-		<style>
-			body { margin: 0; }
-		</style>
-		<script type="importmap">
-			{
-				"imports": {
-					"three": "https://threejs.org/build/three.module.js"
-				}
-			}
-		</script>
-	</head>
-	<body>
-		<script type="module" src="./static/main.js"></script>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Connect Four</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://threejs.org/build/three.module.js",
+          "gsap": "./node_modules/gsap/all.js"
+        }
+      }
+    </script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Shadows+Into+Light);
+      @import url(https://fonts.googleapis.com/css2?family=Rubik+Broken+Fax&display=swap);
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+      #computerVSHumanButton {
+        clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+        display: none;
+        font-size: 25px;
+        padding: 15px 58px;
+      }
+      #computerVSComputerButton {
+        clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%);
+        display: none;
+        font-size: 25px;
+        padding: 15px 50px;
+      }
+      #start {
+        clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+        position: absolute;
+        display: none;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 12px 35px;
+        font-size: 25px;
+        font-family: Rubik Broken Fax;
+        cursor: pointer;
+        border: 2px solid rgba(255, 0, 0, 0.815);
+        color: yellow;
+        background-color: rgba(255, 0, 0, 0.815);
+      }
+      .game-button {
+        display: block;
+        margin: 30px auto;
+        font-family: Rubik Broken Fax;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        border: 2px solid rgba(255, 0, 0, 0.815);
+        border-radius: 5px;
+        color: yellow;
+        background-color: rgba(255, 0, 0, 0.815);
+        transition: background-color 0.3s, color 0.3s;
+      }
+      #gameMode {
+        position: relative;
+        display: None;
+        font-family: Rubik Broken Fax;
+        font-size: 30px;
+        color: yellow;
+        text-align: center;
+      }
+      .container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        align-items: center;
+      }
+      #turn_box {
+        position: absolute;
+        bottom: 50px;
+        left: 50%;
+        clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+        transform: translateX(-50%);
+        align-items: center;
+        background: rgba(255, 0, 0, 0.815);
+        border: 2px solid rgba(255, 0, 0, 0.815);
+        display: none;
+        padding-left: 40px;
+        padding-right: 40px;
+      }
+      #turn {
+        position: relative;
+        font-family: Rubik Broken Fax;
+        font-size: 20px;
+        padding-right: 10px;
+        padding-left: 10px;
+        color: yellow;
+      }
+      #back{
+        position: absolute;
+        display: none;
+        top: 20px;
+        left: 20px;
+        padding: 12px;
+        font-size: 20px;
+        font-family: Rubik Broken Fax;
+        cursor: pointer;
+        border: 2px solid rgba(255, 0, 0, 0.815);
+        color: yellow;
+        background-color: rgba(255, 0, 0, 0.815);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="gameMode">
+        <h1>Choose your Game Mode</h1>
+      </div>
+      <button id="computerVSHumanButton" class="game-button">
+        Computer VS Human
+      </button>
+      <button id="computerVSComputerButton" class="game-button">
+        Computer VS Computer
+      </button>
+    </div>
+
+    <div id="turn_box">
+      <h3 id="turn">Text</h3>
+    </div>
+
+    <button id="start">Start</button>
+
+    <button id="back">Back</button>
+    <script type="module" src="./static/main.js"></script>
+  </body>
 </html>
